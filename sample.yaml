@@ -11,7 +11,7 @@
 			},
 			"isCPIRequired": false,
 			"deploymentPath": [
-				"file://etc/kubernetes/vsphere-csi-controller-rbac.yaml",
+				"https://raw.githubusercontent.com/kubernetes-sigs/vsphere-csi-driver/v2.2.1/manifests/v2.2.1/rbac/vsphere-csi-controller-rbac.yaml",
 				"https://raw.githubusercontent.com/kubernetes-sigs/vsphere-csi-driver/v2.2.1/manifests/v2.2.1/rbac/vsphere-csi-node-rbac.yaml",
 				"https://raw.githubusercontent.com/kubernetes-sigs/vsphere-csi-driver/v2.2.1/manifests/v2.2.1/deploy/vsphere-csi-controller-deployment.yaml",
 				"https://raw.githubusercontent.com/kubernetes-sigs/vsphere-csi-driver/v2.2.1/manifests/v2.2.1/deploy/vsphere-csi-node-ds.yaml"
@@ -42,7 +42,7 @@
 				"max": "7.0.7"
 			},
 			"k8s": {
-				"skewVersion": "1.21"
+				"skewVersion": "1.22"
 			},
 			"deploymentPath": [
 				"https://raw.githubusercontent.com/kubernetes/cloud-provider-vsphere/v1.20.0/manifests/controller-manager/cloud-controller-manager-roles.yaml",
