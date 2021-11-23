@@ -42,7 +42,7 @@
 				"max": "7.0.7"
 			},
 			"k8s": {
-				"skewVersion": "1.21"
+				"skewVersion": "1.20"
 			},
 			"deploymentPath": [
 				"https://raw.githubusercontent.com/kubernetes/cloud-provider-vsphere/v1.20.0/manifests/controller-manager/cloud-controller-manager-roles.yaml",
