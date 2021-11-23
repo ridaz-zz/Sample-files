@@ -7,7 +7,7 @@
 			},
 			"k8s": {
 				"min": "1.18",
-				"max": "1.20"
+				"max": "1.22"
 			},
 			"isCPIRequired": false,
 			"deploymentPath": [
