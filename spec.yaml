@@ -3,6 +3,7 @@ kind: Namespace
 metadata:
   labels:
     control-plane: controller-manager
+    vdo.vmware.com/managed-by: vdo
   name: vmware-system-vdo
 ---
 apiVersion: apiextensions.k8s.io/v1
@@ -11,6 +12,8 @@ metadata:
   annotations:
     controller-gen.kubebuilder.io/version: v0.4.1
   creationTimestamp: null
+  labels:
+    vdo.vmware.com/managed-by: vdo
   name: vdoconfigs.vdo.vmware.com
 spec:
   group: vdo.vmware.com
@@ -56,14 +59,15 @@ spec:
                     items:
                       type: string
                     type: array
-                required:
-                - vsphereCloudConfigs
                 type: object
               storageProvider:
                 description: StorageProvider refers to the section of config that is required to configure CSI driver
                 properties:
                   clusterDistribution:
                     description: ClusterDistribution refers to the type of k8s distribution such as TKGI, OpenShift
+                    type: string
+                  customKubeletPath:
+                    description: CustomKubeletPath refers to the Kubelet Path in case of custom K8s deployments
                     type: string
                   fileVolumes:
                     description: FileVolumes refers to the configuration required for file volumes
@@ -160,6 +164,8 @@ metadata:
   annotations:
     controller-gen.kubebuilder.io/version: v0.4.1
   creationTimestamp: null
+  labels:
+    vdo.vmware.com/managed-by: vdo
   name: vspherecloudconfigs.vdo.vmware.com
 spec:
   group: vdo.vmware.com
@@ -239,12 +245,16 @@ status:
 apiVersion: v1
 kind: ServiceAccount
 metadata:
+  labels:
+    vdo.vmware.com/managed-by: vdo
   name: vdo-controller-manager
   namespace: vmware-system-vdo
 ---
 apiVersion: rbac.authorization.k8s.io/v1
 kind: Role
 metadata:
+  labels:
+    vdo.vmware.com/managed-by: vdo
   name: vdo-leader-election-role
   namespace: vmware-system-vdo
 rules:
@@ -284,6 +294,8 @@ apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRole
 metadata:
   creationTimestamp: null
+  labels:
+    vdo.vmware.com/managed-by: vdo
   name: vdo-manager-role
 rules:
 - apiGroups:
@@ -292,6 +304,7 @@ rules:
   - configmaps
   verbs:
   - create
+  - delete
   - get
   - list
   - patch
@@ -302,6 +315,7 @@ rules:
   resources:
   - nodes
   verbs:
+  - delete
   - get
   - list
   - patch
@@ -312,6 +326,7 @@ rules:
   resources:
   - pods
   verbs:
+  - delete
   - get
   - list
   - watch
@@ -321,6 +336,7 @@ rules:
   - secrets
   verbs:
   - create
+  - delete
   - get
   - list
   - update
@@ -331,6 +347,7 @@ rules:
   - serviceaccounts
   verbs:
   - create
+  - delete
   - get
   - list
   - patch
@@ -341,26 +358,42 @@ rules:
   - services
   verbs:
   - create
+  - delete
   - get
   - list
   - patch
   - update
+- apiGroups:
+  - '*'
+  resources:
+  - namespaces
+  verbs:
+  - create
+  - delete
+  - get
+  - list
+  - patch
+  - update
+  - watch
 - apiGroups:
   - apps
   resources:
   - daemonsets
   verbs:
   - create
+  - delete
   - get
   - list
   - patch
   - update
+  - watch
 - apiGroups:
   - apps
   resources:
   - deployments
   verbs:
   - create
+  - delete
   - get
   - list
   - patch
@@ -396,6 +429,7 @@ rules:
   - csidrivers
   verbs:
   - create
+  - delete
   - get
   - list
   - patch
@@ -407,6 +441,7 @@ rules:
   - csinodes
   verbs:
   - create
+  - delete
   - get
   - list
   - watch
@@ -466,6 +501,8 @@ rules:
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRole
 metadata:
+  labels:
+    vdo.vmware.com/managed-by: vdo
   name: vdo-metrics-reader
 rules:
 - nonResourceURLs:
@@ -476,6 +513,8 @@ rules:
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRole
 metadata:
+  labels:
+    vdo.vmware.com/managed-by: vdo
   name: vdo-proxy-role
 rules:
 - apiGroups:
@@ -494,6 +533,8 @@ rules:
 apiVersion: rbac.authorization.k8s.io/v1
 kind: RoleBinding
 metadata:
+  labels:
+    vdo.vmware.com/managed-by: vdo
   name: vdo-leader-election-rolebinding
   namespace: vmware-system-vdo
 roleRef:
@@ -508,6 +549,8 @@ subjects:
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRoleBinding
 metadata:
+  labels:
+    vdo.vmware.com/managed-by: vdo
   name: vdo-manager-rolebinding
 roleRef:
   apiGroup: rbac.authorization.k8s.io
@@ -521,6 +564,8 @@ subjects:
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRoleBinding
 metadata:
+  labels:
+    vdo.vmware.com/managed-by: vdo
   name: vdo-proxy-rolebinding
 roleRef:
   apiGroup: rbac.authorization.k8s.io
@@ -547,6 +592,8 @@ data:
       resourceName: 540e4412.vmware.com
 kind: ConfigMap
 metadata:
+  labels:
+    vdo.vmware.com/managed-by: vdo
   name: vdo-manager-config
   namespace: vmware-system-vdo
 ---
@@ -555,6 +602,7 @@ kind: Service
 metadata:
   labels:
     control-plane: controller-manager
+    vdo.vmware.com/managed-by: vdo
   name: vdo-controller-manager-metrics-service
   namespace: vmware-system-vdo
 spec:
@@ -564,12 +612,14 @@ spec:
     targetPort: https
   selector:
     control-plane: controller-manager
+    vdo.vmware.com/managed-by: vdo
 ---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
   labels:
     control-plane: controller-manager
+    vdo.vmware.com/managed-by: vdo
   name: vdo-controller-manager
   namespace: vmware-system-vdo
 spec:
@@ -577,6 +627,7 @@ spec:
   selector:
     matchLabels:
       control-plane: controller-manager
+      vdo.vmware.com/managed-by: vdo
   strategy:
     rollingUpdate:
       maxSurge: 0
@@ -586,6 +637,7 @@ spec:
     metadata:
       labels:
         control-plane: controller-manager
+        vdo.vmware.com/managed-by: vdo
     spec:
       containers:
       - args:
@@ -617,12 +669,16 @@ spec:
               key: versionConfigURL
               name: compat-matrix-config
               optional: true
+        - name: VDO_NAMESPACE
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.namespace
         - name: AUTO_UPGRADE
           valueFrom:
             configMapKeyRef:
               key: auto-upgrade
               name: compat-matrix-config
-        image: projects.registry.vmware.com/vsphere_kubernetes_driver_operator/vdo:c39004f
+        image: projects.registry.vmware.com/vsphere_kubernetes_driver_operator/vdo@sha256:a89deecd215d19f40ddd140a12bc34416e24839fab72ebf8b11d855a30e05fce
         imagePullPolicy: IfNotPresent
         livenessProbe:
           httpGet:
@@ -671,3 +727,12 @@ spec:
           path: /etc/kubernetes
           type: DirectoryOrCreate
         name: vsphere-config-volume
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+ name: compat-matrix-config
+ namespace: vmware-system-vdo
+data:
+ versionConfigURL: "https://github.com/vmware-tanzu/vsphere-kubernetes-drivers-operator/releases/download/0.1.1/compatibility.yaml"
+ auto-upgrade: "disabled"
